@@ -1,14 +1,16 @@
 package com.tibco.mcqueary.ems.samples.springjms;
 
-import javax.jms.JMSException;
-
+import com.beans.PlayerDetails;
+import com.beans.PositionType;
+import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import junit.framework.TestCase;
+
+import javax.jms.JMSException;
 
 
 /**
@@ -48,5 +50,16 @@ public class MessageServiceTest extends TestCase
 	public void testReadMessage() throws JMSException {
 		String readMessage = messageService.readMessage();
 		assertEquals(readMessage, message);
+	}
+
+	@Test
+	public void testSendMessageByObject() throws JMSException {
+		PlayerDetails p = new PlayerDetails();
+		p.setAge(23);
+		p.setName("keuss");
+		p.setPosition(PositionType.ATT);
+		p.setSurname("Da");
+		p.setTeamName("psg");
+		messageService.sendMessageByObject(p);
 	}
 }

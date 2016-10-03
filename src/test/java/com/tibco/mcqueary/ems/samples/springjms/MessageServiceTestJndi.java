@@ -3,6 +3,7 @@ package com.tibco.mcqueary.ems.samples.springjms;
 import javax.jms.JMSException;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ public class MessageServiceTestJndi extends TestCase
 	 * Test setup.
 	 */
 	@Before
+	@Ignore
 	public void setUp() {
 		message = "TIBCO EMS test message.";
 	}
@@ -35,6 +37,7 @@ public class MessageServiceTestJndi extends TestCase
 	 * Test that sends a message to a queue.
 	 */
 	@Test
+	@Ignore
 	public void testSendMessage() {
 		messageService.sendMessage(message);
 	}
@@ -45,6 +48,7 @@ public class MessageServiceTestJndi extends TestCase
 	 * @throws JMSException
 	 */
 	@Test
+	@Ignore
 	public void testReadMessage() throws JMSException {
 		String readMessage = messageService.readMessage();
 		assertEquals(readMessage, message);

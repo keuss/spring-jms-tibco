@@ -1,28 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="
-		http://www.springframework.org/schema/beans
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:oxm="http://www.springframework.org/schema/oxm"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
 		http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context        
-		http://www.springframework.org/schema/context/spring-context.xsd">
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm.xsd">
 
-	<context:property-placeholder location="classpath:test.properties" />
+    <context:property-placeholder location="classpath:test.properties"/>
 
-	<bean id="jmsConnectionFactory" class="com.tibco.tibjms.TibjmsConnectionFactory">
-		<property name="serverUrl" value="tcp://localhost:7222" />
-	</bean>
-	
-	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
-		<property name="connectionFactory" ref="jmsConnectionFactory" />
-		<property name="defaultDestinationName" value="queue.sample" />		
-		<property name="explicitQosEnabled" value="true" />
-<!-- 		<property name="timeToLive" value="3000" /> -->
-		<property name="deliveryMode" value="2" />
-		<property name="sessionAcknowledgeModeName" value="CLIENT_ACKNOWLEDGE" />
-		<property name="sessionTransacted" value="false" />
-	</bean>
+    <bean id="jmsConnectionFactory" class="com.tibco.tibjms.TibjmsConnectionFactory">
+        <property name="serverUrl" value="${broker.url}"/>
+        <property name="userName" value="${broker.user}"/>
+    </bean>
 
-	<bean id="messageService" class="com.tibco.mcqueary.ems.samples.springjms.MessageService" />
+    <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory" ref="jmsConnectionFactory"/>
+        <property name="defaultDestinationName" value="${broker.destinationIN}"/>
+        <property name="explicitQosEnabled" value="true"/>
+        <!-- 		<property name="timeToLive" value="3000" /> -->
+        <property name="deliveryMode" value="2"/>
+        <property name="sessionAcknowledgeModeName" value="CLIENT_ACKNOWLEDGE"/>
+        <property name="sessionTransacted" value="false"/>
+        <property name="messageConverter" ref="oxmMessageConverter"/>
+    </bean>
+
+    <!-- Message converter - automatically marshalls and unmarshalls messages using the provided marshaller / unmarshaller-->
+    <!-- MarshallingMessageConverter using bytes by default so your xml document is sent as a BytesMessage-->
+    <bean id="oxmMessageConverter" class="org.springframework.jms.support.converter.MarshallingMessageConverter">
+        <property name="targetType" value="TEXT"/>
+        <property name="marshaller" ref="marshaller"/>
+        <property name="unmarshaller" ref="marshaller"/>
+    </bean>
+
+    <!-- Spring's JAXB implementation of marshaller - provided a class the JAXB generated class -->
+    <oxm:jaxb2-marshaller id="marshaller">
+        <oxm:class-to-be-bound name="com.beans.PlayerDetails"/>
+    </oxm:jaxb2-marshaller>
+
+    <bean id="messageService" class="com.tibco.mcqueary.ems.samples.springjms.MessageService">
+        <property name="destination" value="${broker.destinationIN}"/>
+    </bean>
 
 </beans>

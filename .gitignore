@@ -8,3 +8,16 @@
 *.epoch
 *~
 /.attach_pid*
+
+
+# IntelliJ Idea files & Maven
+.idea/*
+*.iml
+*/target/**
+*/build/**
+
+# Eclipse
+.metadata
+.classpath
+.settings/
+.project
